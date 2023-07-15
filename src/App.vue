@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 
 import checkMobile from './utilities/is-mobile'
+import FooterComponent from './components/Footer.vue';
 
 interface ComponentState {
   ctx: CanvasRenderingContext2D | null;
@@ -16,7 +17,7 @@ interface ComponentState {
 
 const state = reactive<ComponentState>({
   ctx: null,
-  flipImage: false,
+  flipImage: true,
   fpsCount: 0,
   frameTime: [],
   isMobile: false,
@@ -187,12 +188,20 @@ onMounted((): void => {
     class="f ai-center j-center wrap"
   >
     <canvas
+      :class="`${state.flipImage ? 'flip' : ''}`"
       ref="canvasRef"
     ></canvas>
+    <FooterComponent />
   </div>
 </template>
 
 <style scoped>
+.flip {
+  -moz-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  -webkit-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
 .wrap {
   min-height: 100vh;
 }
