@@ -3,8 +3,22 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <div class="f ai-center footer">
-    <a href="https://dyum.in">Peter Dyumin</a>, {{ year }}
+  <div class="f ai-center ns footer">
+    <div class="logo">
+      <img
+        alt="Logo"
+        class="logo"
+        src="/favicon-light.svg"
+      />
+    </div>
+    <a
+      class="mh-1"
+      href="https://dyum.in"
+      target="_blank"
+    >
+      Peter Dyumin
+    </a>
+    {{ year }}
   </div>
 </template>
 
@@ -17,5 +31,8 @@ const year = new Date().getFullYear()
   height: calc(var(--spacer) * 2);
   padding: 0 var(--spacer);
   color: var(--text-inverted);
+}
+.logo {
+  height: calc(var(--spacer));
 }
 </style>

@@ -141,6 +141,13 @@ const handleSuccess = (stream: MediaStream): void => {
 };
 
 onMounted((): void => {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    const faviconLink = document.querySelector<HTMLLinkElement>(`link[rel~='${'icon'}']`);
+    if (faviconLink) {
+      faviconLink.href = 'favicon-light.svg';
+    }
+  }
+
   const isMobile = checkMobile()
   state.isMobile = isMobile
 
