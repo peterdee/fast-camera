@@ -142,43 +142,41 @@ export default function fast({
     if (invalidIndexesLength > 4) {
       continue;
     }
-    if (invalidIndexesLength > 1) {
-      const checkBright = darkerCount < brighterCount;
-      let nextIndex = clamp(invalidIndexes[0] + 1, 15);
-      let currentValid = 0;
-			let maxValid = 0;
-			let intensitySum = 0;
-      for (let i = 0; i < 15; i += 1) {
-        const point = circle[nextIndex];
-        if ((checkBright && point > deltaMax) || (!checkBright && point < deltaMin)) {
-          currentValid += 1;
-          intensitySum += Math.abs(grayPixel - point);
-        } else {
-          currentValid = 0;
-        }
-        if (currentValid > maxValid) {
-          maxValid = currentValid;
-        }
-        nextIndex = clamp(nextIndex + 1, 15);
+    const checkBright = darkerCount < brighterCount;
+    let nextIndex = invalidIndexes.length > 0 ? clamp(invalidIndexes[0] + 1, 15) : 0;
+    let currentValid = 0;
+    let maxValid = 0;
+    let intensitySum = 0;
+    for (let i = 0; i < 15; i += 1) {
+      const point = circle[nextIndex];
+      if ((checkBright && point > deltaMax) || (!checkBright && point < deltaMin)) {
+        currentValid += 1;
+        intensitySum += Math.abs(grayPixel - point);
+      } else {
+        currentValid = 0;
       }
-      if (maxValid < 12) {
-        continue;
+      if (currentValid > maxValid) {
+        maxValid = currentValid;
       }
-
-      const intensityAverage = intensitySum / maxValid;
-      const intensityDifference = grayPixel > intensityAverage
-        ? grayPixel - intensityAverage
-        : intensityAverage - grayPixel;
-      
-      points.push({
-        intensityDifference,
-        x,
-        y,
-      })
+      nextIndex = clamp(nextIndex + 1, 15);
     }
+    if (maxValid < 12) {
+      continue;
+    }
+
+    const intensityAverage = intensitySum / maxValid;
+    const intensityDifference = grayPixel > intensityAverage
+      ? grayPixel - intensityAverage
+      : intensityAverage - grayPixel;
+    
+    points.push({
+      intensityDifference,
+      x,
+      y,
+    });
   }
 
-  const nmsPoints = nms(points, radius);
+  // const nmsPoints = nms(points, radius);
   points.forEach((point: CornerPoint): void => {
     if (point) {
       drawSquare(pixels, point.x, point.y, width);

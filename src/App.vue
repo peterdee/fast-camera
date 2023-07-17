@@ -4,6 +4,7 @@ import { onMounted, reactive, ref } from 'vue';
 import checkMobile from './utilities/is-mobile';
 import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
+import FPSCounterComponent from './components/FPSCounter.vue';
 
 interface ComponentState {
   ctx: CanvasRenderingContext2D | null;
@@ -55,7 +56,7 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     return fast({
       imageData: frame,
       radius: 40,
-      threshold: 40,
+      threshold: 20,
     });
   })();
 
@@ -173,6 +174,7 @@ onMounted((): void => {
   <div
     class="f ai-center j-center wrap"
   >
+    <FPSCounterComponent :count="state.fpsCount" />
     <canvas
       :class="`${state.flipImage ? 'flip' : ''}`"
       ref="canvasRef"
