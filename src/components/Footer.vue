@@ -12,25 +12,34 @@ const year = new Date().getFullYear()
       />
     </div>
     <a
-      class="mh-1"
+      class="mh-half"
       href="https://dyum.in"
       target="_blank"
     >
       Peter Dyumin
     </a>
-    {{ year }}
+    ©
+    <span class="ml-half">
+      {{ year }}
+    </span>
   </div>
 </template>
 
 <style scoped>
 .footer {
-  position: absolute;
-  bottom: var(--spacer);
-  border-radius: var(--spacer);
   background-color: rgba(0, 0, 0, .6);
-  height: calc(var(--spacer) * 2);
-  padding: 0 var(--spacer);
+  border-radius: var(--spacer);
+  bottom: var(--spacer);
   color: var(--text-inverted);
+  height: calc(var(--spacer) * 2);
+  opacity: .5;
+  padding: 0 var(--spacer);
+  position: fixed;
+  transition: opacity var(--transition) ease-out;
+}
+.footer:hover {
+  opacity: 1;
+  transition: opacity var(--transition) ease-in;
 }
 .logo {
   height: calc(var(--spacer));
