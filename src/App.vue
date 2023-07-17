@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue';
 
-import checkMobile from './utilities/is-mobile'
+import checkMobile from './utilities/is-mobile';
+import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
 
 interface ComponentState {
@@ -49,38 +50,16 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     canvasWidth = canvasRef.value.width;
   }
 
-  // const imageData = ((): ImageData => {
-  //   const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  //   if (state.processingType === 'canvas') {
-  //     if (state.selectedFilter.value === 'binary') {
-  //       return canvasFilters.binary(frame, state.selectedThreshold);
-  //     }
-  //     if (state.selectedFilter.value === 'colorInversion') {
-  //       return canvasFilters.colorInversion(frame);
-  //     }
-  //     if (state.selectedFilter.value === 'eightColors') {
-  //       return canvasFilters.eightColors(frame);
-  //     }
-  //     if (state.selectedFilter.value === 'grayscale') {
-  //       return canvasFilters.grayscale(frame, state.selectedGrayscaleType);
-  //     }
-  //     if (state.selectedFilter.value === 'laplacian') {
-  //       return canvasFilters.laplacian(frame);
-  //     }
-  //     if (state.selectedFilter.value === 'sobel') {
-  //       return canvasFilters.sobel(frame);
-  //     }
-  //     return canvasFilters.solarize(frame, state.selectedThreshold);
-  //   }
-  //   return bridge(
-  //     frame,
-  //     state.selectedFilter.value,
-  //     state.selectedThreshold,
-  //     state.selectedGrayscaleType,
-  //   );
-  // })();
+  const imageData = ((): ImageData => {
+    const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    return fast({
+      imageData: frame,
+      radius: 40,
+      threshold: 40,
+    });
+  })();
 
-  ctx.putImageData(ctx.getImageData(0, 0, canvasWidth, canvasHeight), 0, 0);
+  ctx.putImageData(imageData, 0, 0);
 
   return setTimeout(draw, 10, video);
 };
@@ -118,8 +97,8 @@ const handleSuccess = (stream: MediaStream): void => {
       : capabilities.width.max;
   }
 
-    // set canvas size
-    if (canvasRef.value) {
+  // set canvas size
+  if (canvasRef.value) {
     canvasRef.value.height = canvasHeight;
     canvasRef.value.width = canvasWidth;
   }
