@@ -14,18 +14,18 @@ interface ComponentState {
   frameTime: number[];
   isMobile: boolean;
   showErrorModal: boolean;
-  showOptionsModal: boolean;
+  showSettingsModal: boolean;
   wasmLoaded: boolean;
 }
 
 const state = reactive<ComponentState>({
   ctx: null,
-  flipImage: true,
+  flipImage: false,
   fpsCount: 0,
   frameTime: [],
   isMobile: false,
   showErrorModal: false,
-  showOptionsModal: false,
+  showSettingsModal: false,
   wasmLoaded: false,
 });
 
@@ -56,8 +56,8 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     return fast({
       imageData: frame,
-      radius: 40,
-      threshold: 40,
+      radius: 5,
+      threshold: 50,
     });
   })();
 
@@ -121,6 +121,10 @@ const handleSuccess = (stream: MediaStream): void => {
   video.play();
 };
 
+const toggleSettingsModal = (): void => {
+  state.showSettingsModal = !state.showSettingsModal;
+};
+
 onMounted((): void => {
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     const faviconLink = document.querySelector<HTMLLinkElement>(`link[rel~='${'icon'}']`);
@@ -175,13 +179,17 @@ onMounted((): void => {
   <div
     class="f ai-center j-center wrap"
   >
-    <FPSCounterComponent :count="state.fpsCount" />
-    <SettingsButtonComponent />
+    <template v-if="!state.showSettingsModal">
+      <FPSCounterComponent :count="state.fpsCount" />
+      <SettingsButtonComponent @handle-click="toggleSettingsModal" />
+    </template>
     <canvas
       :class="`${state.flipImage ? 'flip' : ''}`"
       ref="canvasRef"
     ></canvas>
-    <FooterComponent />
+    <template v-if="!state.showSettingsModal">
+      <FooterComponent />
+    </template>
   </div>
 </template>
 

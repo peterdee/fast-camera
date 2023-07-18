@@ -6,6 +6,7 @@
   <button
     class="f ai-center settings"
     type="button"
+    @click="$emit('handle-click')"
   >
     <img
       alt="Settings"
