@@ -36,6 +36,7 @@ const year = new Date().getFullYear()
   padding: 0 var(--spacer);
   position: fixed;
   transition: opacity var(--transition) ease-out;
+  z-index: 10;
 }
 .footer:hover {
   opacity: 1;

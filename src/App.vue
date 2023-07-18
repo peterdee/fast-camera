@@ -6,9 +6,11 @@ import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
 import FPSCounterComponent from './components/FPSCounter.vue';
 import SettingsButtonComponent from './components/SettingsButton.vue';
+import SettingsModalComponent from './components/SettingsModal.vue';
 
 interface ComponentState {
   ctx: CanvasRenderingContext2D | null;
+  fastThreshold: number;
   flipImage: boolean;
   fpsCount: number;
   frameTime: number[];
@@ -20,6 +22,7 @@ interface ComponentState {
 
 const state = reactive<ComponentState>({
   ctx: null,
+  fastThreshold: 50,
   flipImage: false,
   fpsCount: 0,
   frameTime: [],
@@ -57,7 +60,7 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     return fast({
       imageData: frame,
       radius: 5,
-      threshold: 40,
+      threshold: state.fastThreshold,
     });
   })();
 
@@ -119,6 +122,15 @@ const handleSuccess = (stream: MediaStream): void => {
   video.playsInline = true;
   video.srcObject = stream;
   video.play();
+};
+
+const handleThreshold = (event: InputEvent): void => {
+  const { value } = event.target as HTMLInputElement;
+  state.fastThreshold = Number(value);
+};
+
+const toggleFlipImage = (): void => {
+  state.flipImage = !state.flipImage;
 };
 
 const toggleSettingsModal = (): void => {
@@ -183,6 +195,15 @@ onMounted((): void => {
       <FPSCounterComponent :count="state.fpsCount" />
       <SettingsButtonComponent @handle-click="toggleSettingsModal" />
     </template>
+    <template v-if="state.showSettingsModal">
+      <SettingsModalComponent
+        :flip-image="state.flipImage"
+        :threshold="state.fastThreshold"
+        @close-modal="toggleSettingsModal"
+        @handle-threshold="handleThreshold"
+        @toggle-flip="toggleFlipImage"
+      />
+    </template>
     <canvas
       :class="`${state.flipImage ? 'flip' : ''}`"
       ref="canvasRef"
@@ -202,5 +223,6 @@ onMounted((): void => {
 }
 .wrap {
   min-height: 100vh;
+  z-index: 0;
 }
 </style>
