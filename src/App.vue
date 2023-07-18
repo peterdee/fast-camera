@@ -57,7 +57,7 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     return fast({
       imageData: frame,
       radius: 5,
-      threshold: 50,
+      threshold: 40,
     });
   })();
 

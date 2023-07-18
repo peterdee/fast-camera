@@ -1,5 +1,5 @@
 export interface CornerPoint {
-  intensityDifference: number;
+  intensitySum: number;
 	x: number;
 	y: number;
 };

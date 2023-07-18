@@ -72,58 +72,63 @@ export default function fast({
   for (let i = 0; i < pixels.length; i += 4) {
     const { x, y } = getCoordinates(i / 4, width);
 
-    // skip border pixels
+    // TODO: handle border pixels, skip for now
     if (x < border || x > width - border
       || y < border || y > height - border) {
       continue;
     }
 
-    const grayPixel = gray[i];
-    const circle = new Array<number>(16);
-    circle[0] = gray[getPixel(x, y - 3, width)];
-    circle[4] = gray[getPixel(x + 3, y, width)];
-    circle[8] = gray[getPixel(x, y + 3, width)];
-    circle[12] = gray[getPixel(x - 3, y, width)];
-
-    const deltaMax = clamp(grayPixel + threshold);
-    const deltaMin = clamp(grayPixel - threshold);
-
+    // high-speed test
     let brighterCount = 0;
     let darkerCount = 0;
-    if (circle[0] > deltaMax) {
+    const grayPixel = gray[i];
+    const deltaMax = clamp(grayPixel + threshold);
+    const deltaMin = clamp(grayPixel - threshold);
+    const point0 = gray[getPixel(x, y - 3, width)];
+    const point8 = gray[getPixel(x, y + 3, width)];
+    if (point0 > deltaMax) {
       brighterCount += 1;
-    } else if (circle[0] < deltaMin) {
+    } else if (point0 < deltaMin) {
       darkerCount += 1;
     }
-    if (circle[4] > deltaMax) {
+    if (point8 > deltaMax) {
       brighterCount += 1;
-    } else if (circle[4] < deltaMin) {
+    } else if (point8 < deltaMin) {
       darkerCount += 1;
     }
-    if (circle[8] > deltaMax) {
+    if (brighterCount + darkerCount === 0) {
+      continue;
+    }
+    const point4 = gray[getPixel(x + 3, y, width)];
+    const point12 = gray[getPixel(x - 3, y, width)];
+    if (point4 > deltaMax) {
       brighterCount += 1;
-    } else if (circle[8] < deltaMin) {
+    } else if (point4 < deltaMin) {
       darkerCount += 1;
     }
-    if (circle[12] > deltaMax) {
+    if (point12 > deltaMax) {
       brighterCount += 1;
-    } else if (circle[12] < deltaMin) {
+    } else if (point12 < deltaMin) {
       darkerCount += 1;
     }
-
     if (brighterCount < 3 && darkerCount < 3) {
       continue;
     }
 
+    const circle = new Array<number>(16);
+    circle[0] = point0;
     circle[1] = gray[getPixel(x + 1, y - 3, width)];
     circle[2] = gray[getPixel(x + 2, y - 2, width)];
     circle[3] = gray[getPixel(x + 3, y - 1, width)];
+    circle[4] = point4;
     circle[5] = gray[getPixel(x + 3, y + 1, width)];
     circle[6] = gray[getPixel(x + 2, y + 2, width)];
     circle[7] = gray[getPixel(x + 1, y + 3, width)];
+    circle[8] = point8;
     circle[9] = gray[getPixel(x - 1, y + 3, width)];
     circle[10] = gray[getPixel(x - 2, y + 2, width)];
     circle[11] = gray[getPixel(x - 3, y + 1, width)];
+    circle[12] = point12;
     circle[13] = gray[getPixel(x - 3, y - 1, width)];
     circle[14] = gray[getPixel(x - 2, y - 2, width)];
     circle[15] = gray[getPixel(x - 1, y - 3, width)];
@@ -143,34 +148,29 @@ export default function fast({
       continue;
     }
     const checkBright = darkerCount < brighterCount;
-    let nextIndex = invalidIndexes.length > 0 ? clamp(invalidIndexes[0] + 1, 15) : 0;
+    let nextIndex = invalidIndexesLength > 0 ? clamp(invalidIndexes[0] + 1, 15) : 0;
     let currentValid = 0;
     let maxValid = 0;
     let intensitySum = 0;
-    for (let i = 0; i < 15; i += 1) {
+    for (let i = 0; i < 16; i += 1) {
       const point = circle[nextIndex];
       if ((checkBright && point > deltaMax) || (!checkBright && point < deltaMin)) {
         currentValid += 1;
-        intensitySum += Math.abs(grayPixel - point);
       } else {
         currentValid = 0;
       }
       if (currentValid > maxValid) {
         maxValid = currentValid;
       }
+      intensitySum += Math.abs(grayPixel - point);
       nextIndex = clamp(nextIndex + 1, 15);
     }
     if (maxValid < 12) {
       continue;
     }
-
-    const intensityAverage = intensitySum / maxValid;
-    const intensityDifference = grayPixel > intensityAverage
-      ? grayPixel - intensityAverage
-      : intensityAverage - grayPixel;
     
     points.push({
-      intensityDifference,
+      intensitySum,
       x,
       y,
     });

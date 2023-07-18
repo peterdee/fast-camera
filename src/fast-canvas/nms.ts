@@ -61,7 +61,7 @@ function nms(
   if (array.length === 0) {
     return combineClusters(cluster, clusters, radius, primary, secondary).map(
       (element) => element.sort(
-        (a, b) => b.intensityDifference - a.intensityDifference,
+        (a, b) => b.intensitySum - a.intensitySum,
       )[0],
     );
   }
