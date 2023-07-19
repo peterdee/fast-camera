@@ -6,6 +6,7 @@ interface FASTOptions {
   imageData: ImageData;
   radius?: number;
   threshold?: number;
+  useNMS?: boolean;
 }
 
 function clamp(value: number, max = 255, min = 0): number {
@@ -63,6 +64,7 @@ export default function fast({
   imageData,
   radius = 15,
   threshold = 120,
+  useNMS = false,
 }: FASTOptions): ImageData {
   const { data: pixels, height, width } = imageData;
   const gray = grayscale(pixels);
@@ -176,12 +178,19 @@ export default function fast({
     });
   }
 
-  // const nmsPoints = nms(points, radius);
-  points.forEach((point: CornerPoint): void => {
-    if (point) {
-      drawSquare(pixels, point.x, point.y, width);
-    }
-  });
+  if (useNMS) {
+    nms(points, radius).forEach((point: CornerPoint): void => {
+      if (point) {
+        drawSquare(pixels, point.x, point.y, width);
+      }
+    });
+  } else {
+    points.forEach((point: CornerPoint): void => {
+      if (point) {
+        drawSquare(pixels, point.x, point.y, width);
+      }
+    });
+  }
 
   return imageData;
 }

@@ -11,21 +11,20 @@ import SettingsModalComponent from './components/SettingsModal.vue';
 
 const DEFAULT_THRESHOLD = 50;
 
-interface ComponentState {
-  ctx: CanvasRenderingContext2D | null;
+interface StoredSettings {
   fastThreshold: number;
   flipImage: boolean;
+  useNMS: boolean;
+}
+
+interface ComponentState extends StoredSettings {
+  ctx: CanvasRenderingContext2D | null;
   fpsCount: number;
   frameTime: number[];
   isMobile: boolean;
   showErrorModal: boolean;
   showSettingsModal: boolean;
   wasmLoaded: boolean;
-}
-
-interface StoredSettings {
-  fastThreshold: number;
-  flipImage: boolean;
 }
 
 const state = reactive<ComponentState>({
@@ -37,6 +36,7 @@ const state = reactive<ComponentState>({
   isMobile: false,
   showErrorModal: false,
   showSettingsModal: false,
+  useNMS: false,
   wasmLoaded: false,
 });
 
@@ -67,8 +67,9 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     return fast({
       imageData: frame,
-      radius: 5,
+      radius: 15,
       threshold: state.fastThreshold,
+      useNMS: state.useNMS,
     });
   })();
 
@@ -77,20 +78,19 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
   return setTimeout(draw, 10, video);
 };
 
+// TODO: handle errors
 const handleError = (reason: unknown): void => {
   state.showErrorModal = true;
   console.log(reason);
 };
 
 const handleSuccess = (stream: MediaStream): void => {
-  console.log('got stream', stream);
-
   const [videoTrack = null] = stream.getVideoTracks();
   if (!videoTrack) {
+    // TODO: handle errors
     state.showErrorModal = true;
     return console.log('video track is not available');
   }
-  console.log('got track', videoTrack);
 
   const windowHeight = window.innerHeight;
   const windowWidth = window.innerWidth;
@@ -140,6 +140,19 @@ const handleThreshold = (event: InputEvent): void => {
     {
       fastThreshold: state.fastThreshold,
       flipImage: state.flipImage,
+      useNMS: state.useNMS,
+    },
+  );
+};
+
+const toggleNMS = (): void => {
+  state.useNMS = !state.useNMS;
+  return setData<StoredSettings>(
+    'settings',
+    {
+      fastThreshold: state.fastThreshold,
+      flipImage: state.flipImage,
+      useNMS: state.useNMS,
     },
   );
 };
@@ -150,7 +163,8 @@ const toggleFlipImage = (): void => {
     'settings',
     {
       fastThreshold: state.fastThreshold,
-      flipImage: !state.flipImage,
+      flipImage: state.flipImage,
+      useNMS: state.useNMS,
     },
   );
 };
@@ -171,6 +185,7 @@ onMounted((): void => {
   if (existingSettings) {
     state.fastThreshold = existingSettings.fastThreshold;
     state.flipImage = existingSettings.flipImage;
+    state.useNMS = existingSettings.useNMS;
   }
 
   const isMobile = checkMobile()
@@ -183,6 +198,7 @@ onMounted((): void => {
       {
         fastThreshold: DEFAULT_THRESHOLD,
         flipImage: true,
+        useNMS: state.useNMS,
       },
     );
   }
@@ -234,9 +250,11 @@ onMounted((): void => {
       <SettingsModalComponent
         :flip-image="state.flipImage"
         :threshold="state.fastThreshold"
+        :use-n-m-s="state.useNMS"
         @close-modal="toggleSettingsModal"
         @handle-threshold="handleThreshold"
         @toggle-flip="toggleFlipImage"
+        @toggle-nms="toggleNMS"
       />
     </template>
     <canvas

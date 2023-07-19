@@ -4,6 +4,7 @@ import SwitchComponent from './Switch.vue';
 const props = defineProps<{
   flipImage: boolean;
   threshold: number;
+  useNMS: boolean;
 }>();
 </script>
 
@@ -17,6 +18,11 @@ const props = defineProps<{
         label="Flip image"
         :is-checked="props.flipImage"
         @toggle-switch="$emit('toggle-flip')"
+      />
+      <SwitchComponent
+        label="Use NMS"
+        :is-checked="props.useNMS"
+        @toggle-switch="$emit('toggle-nms')"
       />
       <div class="mt-1 divider"></div>
       <div class="f d-col mt-1">
@@ -82,5 +88,71 @@ const props = defineProps<{
   color: var(--accent);
   font-size: calc(var(--spacer) + var(--spacer-half));
   font-weight: 300;
+}
+input[type=range] {
+  appearance: none;
+  background-color: transparent;
+  width: calc(100% - var(--spacer) * 5);
+  -webkit-appearance: none;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  background: var(--text-inverted);
+  border-radius: var(--spacer-half);
+  cursor: pointer;
+  height: calc(var(--spacer) - var(--spacer-quarter));
+  width: 100%;
+}
+input[type=range]::-webkit-slider-thumb {
+  background: var(--accent);
+  border-radius: var(--spacer-quarter);
+  cursor: pointer;
+  height: var(--spacer);
+  margin-top: calc(var(--spacer-quarter) / 2 * -1);
+  width: calc(var(--spacer) - var(--spacer-quarter));
+  -webkit-appearance: none;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: var(--text-inverted);
+}
+input[type=range]::-moz-range-track {
+  background: var(--text-inverted);
+  border-radius: var(--spacer-half);
+  cursor: pointer;
+  height: calc(var(--spacer) - var(--spacer-quarter));
+  width: 100%;
+}
+input[type=range]::-moz-range-thumb {
+  background: var(--accent);
+  border-radius: var(--spacer-quarter);
+  cursor: pointer;
+  height: var(--spacer);
+  width: calc(var(--spacer) - var(--spacer-quarter));
+}
+input[type=range]::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+  cursor: pointer;
+  height: calc(var(--spacer) - var(--spacer-quarter));
+  width: 100%;
+}
+input[type=range]::-ms-fill-lower,
+input[type=range]::-ms-fill-upper {
+  background: var(--text-inverted);
+  border-radius: var(--spacer);
+}
+input[type=range]::-ms-thumb {
+  background: var(--accent);
+  border-radius: var(--spacer-quarter);
+  cursor: pointer;
+  height: var(--spacer);
+  width: calc(var(--spacer) - var(--spacer-quarter));
+}
+input[type=range]:focus::-ms-fill-lower,
+input[type=range]:focus::-ms-fill-upper {
+  background: var(--text-inverted);
 }
 </style>
