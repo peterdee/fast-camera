@@ -5,8 +5,11 @@ import checkMobile from './utilities/is-mobile';
 import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
 import FPSCounterComponent from './components/FPSCounter.vue';
+import { getData, setData } from './utilities/data-service';
 import SettingsButtonComponent from './components/SettingsButton.vue';
 import SettingsModalComponent from './components/SettingsModal.vue';
+
+const DEFAULT_THRESHOLD = 50;
 
 interface ComponentState {
   ctx: CanvasRenderingContext2D | null;
@@ -20,9 +23,14 @@ interface ComponentState {
   wasmLoaded: boolean;
 }
 
+interface StoredSettings {
+  fastThreshold: number;
+  flipImage: boolean;
+}
+
 const state = reactive<ComponentState>({
   ctx: null,
-  fastThreshold: 50,
+  fastThreshold: DEFAULT_THRESHOLD,
   flipImage: false,
   fpsCount: 0,
   frameTime: [],
@@ -127,10 +135,24 @@ const handleSuccess = (stream: MediaStream): void => {
 const handleThreshold = (event: InputEvent): void => {
   const { value } = event.target as HTMLInputElement;
   state.fastThreshold = Number(value);
+  return setData<StoredSettings>(
+    'settings',
+    {
+      fastThreshold: state.fastThreshold,
+      flipImage: state.flipImage,
+    },
+  );
 };
 
 const toggleFlipImage = (): void => {
   state.flipImage = !state.flipImage;
+  return setData<StoredSettings>(
+    'settings',
+    {
+      fastThreshold: state.fastThreshold,
+      flipImage: !state.flipImage,
+    },
+  );
 };
 
 const toggleSettingsModal = (): void => {
@@ -145,11 +167,24 @@ onMounted((): void => {
     }
   }
 
+  const existingSettings = getData<StoredSettings>('settings');
+  if (existingSettings) {
+    state.fastThreshold = existingSettings.fastThreshold;
+    state.flipImage = existingSettings.flipImage;
+  }
+
   const isMobile = checkMobile()
   state.isMobile = isMobile
 
-  if (!isMobile) {
+  if (!isMobile && !existingSettings) {
     state.flipImage = true;
+    setData<StoredSettings>(
+      'settings',
+      {
+        fastThreshold: DEFAULT_THRESHOLD,
+        flipImage: true,
+      },
+    );
   }
 
   if (canvasRef.value) {

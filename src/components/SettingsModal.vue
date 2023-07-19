@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SwitchComponent from './Switch.vue';
+
 const props = defineProps<{
   flipImage: boolean;
   threshold: number;
@@ -7,24 +9,22 @@ const props = defineProps<{
 
 <template>
   <div class="f ai-center ns modal">
-    <div class="f d-col mh-auto">
-      <h2>
-        Settings
-      </h2>
-      <div class="f mt-1">
-        <input
-          id="flip"
-          type="checkbox"
-          :checked="props.flipImage"
-          @change="$emit('toggle-flip')"
-        />
-        <label for="flip">
-          Flip image
-        </label>
+    <div class="f d-col mh-auto content">
+      <div class="t-center title">
+        FAST corner detector demo
       </div>
+      <SwitchComponent
+        label="Flip image"
+        :is-checked="props.flipImage"
+        @toggle-switch="$emit('toggle-flip')"
+      />
+      <div class="mt-1 divider"></div>
       <div class="f d-col mt-1">
-        <div class="f ai-center j-space-between">
-          <span>
+        <span class="t-center">
+          FAST threshold
+        </span>
+        <div class="f ai-center j-space-between mt-1">
+          <span class="t-left threshold">
             1
           </span>
           <input
@@ -35,25 +35,38 @@ const props = defineProps<{
             :value="props.threshold"
             @input="$emit('handle-threshold', $event)"
           />
-          <span>
+          <span class="t-right threshold">
             255
           </span>
         </div>
-        <div class="f j-center">
+        <div class="f mh-auto j-center threshold">
           {{ props.threshold }}
         </div>
       </div>
       <button
-        class="mt-1"
+        class="mt-2 button close-button"
         @click="$emit('close-modal')"
       >
-        Close
+        CLOSE
       </button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.close-button {
+  color: var(--text);
+}
+.content {
+  max-width: calc(var(--spacer) * 25);
+  min-width: calc(var(--spacer) * 15);
+  width: 30%;
+}
+.divider {
+  background-color: var(--text-inverted);
+  width: 100%;
+  height: calc(var(--spacer-quarter) / 4);
+}
 .modal {
   background-color: rgba(0, 0, 0, .6);
   color: var(--text-inverted);
@@ -61,5 +74,13 @@ const props = defineProps<{
   position: fixed;
   width: 100%;
   z-index: 10;
+}
+.threshold {
+  width: calc(var(--spacer) * 3);
+}
+.title {
+  color: var(--accent);
+  font-size: calc(var(--spacer) + var(--spacer-half));
+  font-weight: 300;
 }
 </style>
