@@ -1,6 +1,6 @@
 import { defineConfig, type ServerOptions } from 'vite';
 import { readFileSync } from 'node:fs';
-import vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue';
 
 // TODO: certificates should be used only for local development
 export default defineConfig({
