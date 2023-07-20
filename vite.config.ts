@@ -1,11 +1,13 @@
-import { defineConfig, type ServerOptions } from 'vite';
+import { defineConfig, type UserConfigExport } from 'vite';
 import { readFileSync } from 'node:fs';
 import vue from '@vitejs/plugin-vue';
 
-// TODO: certificates should be used only for local development
-export default defineConfig({
+const configuration: UserConfigExport = {
   plugins: [vue()],
-  server: {
+};
+
+if (process.env.ENV === 'local') {
+  configuration.server = {
     cors: true,
     host: true,
     https: {
@@ -13,5 +15,7 @@ export default defineConfig({
       key: readFileSync('./certificates/key.pem'),
     },
     port: 3000,
-  },
-})
+  };
+}
+
+export default defineConfig(configuration);

@@ -27,7 +27,7 @@ const year = new Date().getFullYear()
 
 <style scoped>
 .footer {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, .7);
   border-radius: var(--spacer);
   bottom: var(--spacer);
   color: var(--text-inverted);

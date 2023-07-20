@@ -15,7 +15,7 @@ const props = defineProps<{ count: number }>();
 
 <style scoped>
 .counter {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, .7);
   border-radius: var(--spacer);
   color: var(--text-inverted);
   height: calc(var(--spacer) * 2);

@@ -216,6 +216,9 @@ onMounted((): void => {
   const constraints: MediaStreamConstraints = {
     audio: false,
     video: {
+      facingMode: {
+        ideal: 'environment',
+      },
       height: {
         ideal: windowHeight,
         max: windowHeight,
@@ -228,9 +231,6 @@ onMounted((): void => {
       },
     },
   };
-  if (isMobile) {
-    (constraints.video as MediaTrackConstraints).facingMode = { exact: 'environment' };
-  }
 
   navigator.mediaDevices.getUserMedia(constraints)
     .then(handleSuccess)

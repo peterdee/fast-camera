@@ -22,7 +22,7 @@
   width: calc(var(--spacer) * 2);
 }
 .settings {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, .7);
   border: none;
   border-radius: 50%;
   color: var(--text-inverted);

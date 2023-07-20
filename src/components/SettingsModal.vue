@@ -1,15 +1,32 @@
 <script setup lang="ts">
+import { reactive } from 'vue';
+
 import SwitchComponent from './Switch.vue';
+
+const emit = defineEmits(['close-modal']);
 
 const props = defineProps<{
   flipImage: boolean;
   threshold: number;
   useNMS: boolean;
 }>();
+
+const state = reactive<{ isClosing: boolean }>({
+  isClosing: false,
+});
+
+const handleCloseModal = (): void => {
+  state.isClosing = true;
+  setTimeout((): void => emit('close-modal'), 160);
+};
 </script>
 
 <template>
-  <div class="f ai-center ns modal">
+  <div
+    :class="`f ai-center ns modal ${state.isClosing
+      ? 'modal-closing'
+      : ''}`"
+  >
     <div class="f d-col mh-auto content">
       <div class="t-center title">
         FAST corner detector demo
@@ -45,13 +62,15 @@ const props = defineProps<{
             255
           </span>
         </div>
-        <div class="f mh-auto j-center threshold">
-          {{ props.threshold }}
+        <div class="f mh-auto j-center">
+          <span class="mt-half t-center threshold">
+            {{ props.threshold }}
+          </span>
         </div>
       </div>
       <button
         class="mt-2 button close-button"
-        @click="$emit('close-modal')"
+        @click="handleCloseModal"
       >
         CLOSE
       </button>
@@ -60,6 +79,22 @@ const props = defineProps<{
 </template>
 
 <style scoped>
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes disappear {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 .close-button {
   color: var(--text);
 }
@@ -74,12 +109,16 @@ const props = defineProps<{
   height: calc(var(--spacer-quarter) / 4);
 }
 .modal {
-  background-color: rgba(0, 0, 0, .6);
+  animation: appear var(--transition) ease-in;
+  background-color: rgba(0, 0, 0, .7);
   color: var(--text-inverted);
   height: 100%;
   position: fixed;
   width: 100%;
   z-index: 10;
+}
+.modal-closing {
+  animation: disappear var(--transition) ease-out;
 }
 .threshold {
   width: calc(var(--spacer) * 3);
