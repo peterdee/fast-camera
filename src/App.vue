@@ -240,7 +240,7 @@ onMounted((): void => {
 
 <template>
   <div
-    class="f ai-center j-center wrap"
+    :class="`f ai-center j-center ${state.isMobile ? 'wrap-mobile' : 'wrap'}`"
   >
     <template v-if="!state.showSettingsModal">
       <FPSCounterComponent :count="state.fpsCount" />
@@ -249,6 +249,7 @@ onMounted((): void => {
     <template v-if="state.showSettingsModal">
       <SettingsModalComponent
         :flip-image="state.flipImage"
+        :is-mobile="state.isMobile"
         :threshold="state.fastThreshold"
         :use-n-m-s="state.useNMS"
         @close-modal="toggleSettingsModal"
@@ -275,7 +276,11 @@ onMounted((): void => {
   transform: scale(-1, 1);
 }
 .wrap {
-  min-height: 100vh;
+  height: 100vh;
+  z-index: 0;
+}
+.wrap-mobile {
+  height: 100%;
   z-index: 0;
 }
 </style>

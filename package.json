@@ -1,5 +1,6 @@
 {
   "name": "fast-camera",
+  "description": "Real-time FAST corner detector demo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,6 +9,19 @@
     "dev": "cross-env ENV=local vite --host",
     "preview": "vite preview"
   },
+  "author": {
+    "name": "Peter Dyumin",
+    "url": "https://github.com/peterdee"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterdee/fast-camera"
+  },
+  "license": "MIT",
   "dependencies": {
     "common-styles": "github:julyskies/common-styles",
     "vue": "^3.3.4"

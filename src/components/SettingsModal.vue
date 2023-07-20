@@ -3,10 +3,16 @@ import { reactive } from 'vue';
 
 import SwitchComponent from './Switch.vue';
 
-const emit = defineEmits(['close-modal']);
+const emit = defineEmits([
+  'close-modal',
+  'handle-threshold',
+  'toggle-flip',
+  'toggle-nms',
+]);
 
 const props = defineProps<{
   flipImage: boolean;
+  isMobile: boolean;
   threshold: number;
   useNMS: boolean;
 }>();
@@ -17,50 +23,48 @@ const state = reactive<{ isClosing: boolean }>({
 
 const handleCloseModal = (): void => {
   state.isClosing = true;
-  setTimeout((): void => emit('close-modal'), 160);
+  setTimeout((): void => emit('close-modal'), 240);
 };
 </script>
 
 <template>
   <div
-    :class="`f ai-center ns modal ${state.isClosing
-      ? 'modal-closing'
+    :class="`f ai-center fade-in ns modal ${state.isClosing
+      ? 'fade-out'
       : ''}`"
   >
-    <div class="f d-col mh-auto content">
-      <div class="t-center title">
+    <div
+      :class="`f d-col mh-auto ${props.isMobile
+        ? 'content-mobile p-2'
+        : 'content'}`"
+    >
+      <div :class="`t-center ${props.isMobile ? 'title-mobile' : 'title'}`">
         FAST corner detector demo
       </div>
       <SwitchComponent
         label="Flip image"
         :is-checked="props.flipImage"
-        @toggle-switch="$emit('toggle-flip')"
+        @toggle-switch="emit('toggle-flip')"
       />
       <SwitchComponent
         label="Use NMS"
         :is-checked="props.useNMS"
-        @toggle-switch="$emit('toggle-nms')"
+        @toggle-switch="emit('toggle-nms')"
       />
       <div class="mt-1 divider"></div>
       <div class="f d-col mt-1">
         <span class="t-center">
           FAST threshold
         </span>
-        <div class="f ai-center j-space-between mt-1">
-          <span class="t-left threshold">
-            1
-          </span>
+        <div class="f ai-center j-center mt-1 w-100">
           <input
             max="255"
             min="1"
             step="1"
             type="range"
             :value="props.threshold"
-            @input="$emit('handle-threshold', $event)"
+            @input="emit('handle-threshold', $event)"
           />
-          <span class="t-right threshold">
-            255
-          </span>
         </div>
         <div class="f mh-auto j-center">
           <span class="mt-half t-center threshold">
@@ -79,29 +83,16 @@ const handleCloseModal = (): void => {
 </template>
 
 <style scoped>
-@keyframes appear {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes disappear {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
 .close-button {
   color: var(--text);
 }
 .content {
-  max-width: calc(var(--spacer) * 25);
-  min-width: calc(var(--spacer) * 15);
+  max-width: calc(var(--spacer) * 30);
+  min-width: calc(var(--spacer) * 20);
   width: 30%;
+}
+.content-mobile {
+  width: 100%;
 }
 .divider {
   background-color: var(--text-inverted);
@@ -109,7 +100,6 @@ const handleCloseModal = (): void => {
   height: calc(var(--spacer-quarter) / 4);
 }
 .modal {
-  animation: appear var(--transition) ease-in;
   background-color: rgba(0, 0, 0, .7);
   color: var(--text-inverted);
   height: 100%;
@@ -117,21 +107,23 @@ const handleCloseModal = (): void => {
   width: 100%;
   z-index: 10;
 }
-.modal-closing {
-  animation: disappear var(--transition) ease-out;
-}
 .threshold {
   width: calc(var(--spacer) * 3);
 }
-.title {
+.title, .title-mobile {
   color: var(--accent);
-  font-size: calc(var(--spacer) + var(--spacer-half));
   font-weight: 300;
+}
+.title {
+  font-size: calc(var(--spacer) + var(--spacer-half));
+}
+.title-mobile {
+  font-size: calc(var(--spacer) + var(--spacer-quarter));
 }
 input[type=range] {
   appearance: none;
   background-color: transparent;
-  width: calc(100% - var(--spacer) * 5);
+  width: 100%;
   -webkit-appearance: none;
 }
 input[type=range]:focus {
