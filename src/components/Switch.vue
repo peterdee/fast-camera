@@ -6,7 +6,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="f ai-center j-space-between ns mt-2">
+  <div class="f ai-center j-space-between ns">
     <label
       class="switch-label"
       for="switch"

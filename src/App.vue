@@ -9,11 +9,13 @@ import { getData, setData } from './utilities/data-service';
 import SettingsButtonComponent from './components/SettingsButton.vue';
 import SettingsModalComponent from './components/SettingsModal.vue';
 
-const DEFAULT_THRESHOLD = 50;
+const DEFAULT_RADIUS = 10;
+const DEFAULT_THRESHOLD = 40;
 
 interface StoredSettings {
   fastThreshold: number;
   flipImage: boolean;
+  nmsRadius: number;
   useNMS: boolean;
 }
 
@@ -34,6 +36,7 @@ const state = reactive<ComponentState>({
   fpsCount: 0,
   frameTime: [],
   isMobile: false,
+  nmsRadius: DEFAULT_RADIUS,
   showErrorModal: false,
   showSettingsModal: false,
   useNMS: false,
@@ -67,7 +70,7 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     return fast({
       imageData: frame,
-      radius: 10,
+      radius: state.nmsRadius,
       threshold: state.fastThreshold,
       useNMS: state.useNMS,
     });
@@ -97,7 +100,6 @@ const handleSuccess = (stream: MediaStream): void => {
   let canvasHeight = windowHeight;
   let canvasWidth = windowWidth;
 
-  // get video resolution
   const capabilities = videoTrack.getCapabilities();
   if (capabilities.height && capabilities.height.max) {
     canvasHeight = capabilities.height.max > windowHeight
@@ -110,13 +112,11 @@ const handleSuccess = (stream: MediaStream): void => {
       : capabilities.width.max;
   }
 
-  // set canvas size
   if (canvasRef.value) {
     canvasRef.value.height = canvasHeight;
     canvasRef.value.width = canvasWidth;
   }
 
-  // adjust video track resolution for mobile devices
   if (state.isMobile) {
     videoTrack.applyConstraints({
       height: canvasWidth,
@@ -132,6 +132,20 @@ const handleSuccess = (stream: MediaStream): void => {
   video.play();
 };
 
+const handleNMSRadius = (event: InputEvent): void => {
+  const { value } = event.target as HTMLInputElement;
+  state.nmsRadius = Number(value);
+  return setData<StoredSettings>(
+    'settings',
+    {
+      fastThreshold: state.fastThreshold,
+      flipImage: state.flipImage,
+      nmsRadius: state.nmsRadius,
+      useNMS: state.useNMS,
+    },
+  );
+};
+
 const handleThreshold = (event: InputEvent): void => {
   const { value } = event.target as HTMLInputElement;
   state.fastThreshold = Number(value);
@@ -140,6 +154,7 @@ const handleThreshold = (event: InputEvent): void => {
     {
       fastThreshold: state.fastThreshold,
       flipImage: state.flipImage,
+      nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
     },
   );
@@ -152,6 +167,7 @@ const toggleNMS = (): void => {
     {
       fastThreshold: state.fastThreshold,
       flipImage: state.flipImage,
+      nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
     },
   );
@@ -164,6 +180,7 @@ const toggleFlipImage = (): void => {
     {
       fastThreshold: state.fastThreshold,
       flipImage: state.flipImage,
+      nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
     },
   );
@@ -198,6 +215,7 @@ onMounted((): void => {
       {
         fastThreshold: DEFAULT_THRESHOLD,
         flipImage: true,
+        nmsRadius: state.nmsRadius,
         useNMS: state.useNMS,
       },
     );
@@ -250,9 +268,11 @@ onMounted((): void => {
       <SettingsModalComponent
         :flip-image="state.flipImage"
         :is-mobile="state.isMobile"
+        :nms-radius="state.nmsRadius"
         :threshold="state.fastThreshold"
         :use-n-m-s="state.useNMS"
         @close-modal="toggleSettingsModal"
+        @handle-nms-radius="handleNMSRadius"
         @handle-threshold="handleThreshold"
         @toggle-flip="toggleFlipImage"
         @toggle-nms="toggleNMS"

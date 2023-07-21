@@ -5,6 +5,7 @@ import SwitchComponent from './Switch.vue';
 
 const emit = defineEmits([
   'close-modal',
+  'handle-nms-radius',
   'handle-threshold',
   'toggle-flip',
   'toggle-nms',
@@ -13,6 +14,7 @@ const emit = defineEmits([
 const props = defineProps<{
   flipImage: boolean;
   isMobile: boolean;
+  nmsRadius: number;
   threshold: number;
   useNMS: boolean;
 }>();
@@ -38,7 +40,7 @@ const handleCloseModal = (): void => {
         ? 'content-mobile p-2'
         : 'content'}`"
     >
-      <div :class="`t-center ${props.isMobile ? 'title-mobile' : 'title'}`">
+      <div :class="`mb-2 t-center ${props.isMobile ? 'title-mobile' : 'title'}`">
         FAST corner detector demo
       </div>
       <SwitchComponent
@@ -46,11 +48,35 @@ const handleCloseModal = (): void => {
         :is-checked="props.flipImage"
         @toggle-switch="emit('toggle-flip')"
       />
+      <div class="mv-1 divider"></div>
       <SwitchComponent
         label="Use NMS"
         :is-checked="props.useNMS"
         @toggle-switch="emit('toggle-nms')"
       />
+      <div class="f d-col mt-1">
+        <span class="t-center">
+          NMS radius
+        </span>
+        <div class="f ai-center j-center mt-1 w-100">
+          <input
+            max="25"
+            min="1"
+            step="1"
+            type="range"
+            :disabled="!useNMS"
+            :value="props.nmsRadius"
+            @input="emit('handle-nms-radius', $event)"
+          />
+        </div>
+        <template v-if="props.useNMS">
+          <div class="f mh-auto j-center">
+          <span class="mt-half t-center threshold">
+            {{ props.nmsRadius }}
+          </span>
+        </div>
+        </template>
+      </div>
       <div class="mt-1 divider"></div>
       <div class="f d-col mt-1">
         <span class="t-center">
