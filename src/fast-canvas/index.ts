@@ -1,5 +1,5 @@
 import type { CornerPoint } from './types';
-import simpleNMS from './simple-nms';
+import NMS from './nms';
 
 interface FASTOptions {
   border?: number;
@@ -179,20 +179,7 @@ export default function fast({
   }
 
   if (useNMS) {
-    const nmsX = simpleNMS(
-      points,
-      [],
-      radius,
-      false,
-      'x',
-    );
-    simpleNMS(
-      nmsX,
-      [],
-      radius,
-      false,
-      'y',
-    ).forEach((point: CornerPoint): void => {
+    NMS(points, radius).forEach((point: CornerPoint): void => {
       if (point) {
         drawSquare(pixels, point.x, point.y, width);
       }

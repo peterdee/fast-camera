@@ -67,7 +67,7 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
     const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     return fast({
       imageData: frame,
-      radius: 15,
+      radius: 10,
       threshold: state.fastThreshold,
       useNMS: state.useNMS,
     });
