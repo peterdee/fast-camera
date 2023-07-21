@@ -188,8 +188,8 @@ onMounted((): void => {
     state.useNMS = existingSettings.useNMS;
   }
 
-  const isMobile = checkMobile()
-  state.isMobile = isMobile
+  const isMobile = checkMobile();
+  state.isMobile = isMobile;
 
   if (!isMobile && !existingSettings) {
     state.flipImage = true;
