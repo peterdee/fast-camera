@@ -1,13 +1,15 @@
 ## fast-camera
 
-Real-time FAST corner detector demo
+Real-time [FAST corner detector](https://docs.opencv.org/5.x/df/d0c/tutorial_py_fast.html) demo
+
+Demo is available online: https://fast.dyum.in / https://fast-camera.vercel.app
 
 ### Deploy
 
 ```shell script
 git clone https://github.com/peterdee/fast-camera
 cd ./fast-camera
-nvm use 20
+nvm use 18
 npm ci
 ```
 
@@ -29,6 +31,8 @@ openssl req -new -sha256 -key key.pem -out csr.csr
 openssl req -x509 -sha256 -days 365 -key key.pem -in csr.csr -out cert.pem
 ```
 
+More details regarding certificates can be found [here](https://msol.io/blog/tech/create-a-self-signed-ssl-certificate-with-openssl/)
+
 Run the server
 
 ```shell script
@@ -36,6 +40,10 @@ npm run dev
 ```
 
 Development server will be available at https://localhost:3000
+
+### Vercel
+
+`release` branch of this repository is automatically deployed to [Vercel](https://vercel.com)
 
 ### License
 

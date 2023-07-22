@@ -54,7 +54,11 @@ const handleCloseModal = (): void => {
         :is-checked="props.useNMS"
         @toggle-switch="emit('toggle-nms')"
       />
-      <div class="f d-col mt-1">
+      <div
+        :class="`f d-col mt-1 ${!props.useNMS
+          ? 'transparency-high'
+          : 'transparency-low'}`"
+      >
         <span class="t-center">
           NMS radius
         </span>
@@ -69,13 +73,11 @@ const handleCloseModal = (): void => {
             @input="emit('handle-nms-radius', $event)"
           />
         </div>
-        <template v-if="props.useNMS">
-          <div class="f mh-auto j-center">
+        <div class="f mh-auto j-center">
           <span class="mt-half t-center threshold">
             {{ props.nmsRadius }}
           </span>
         </div>
-        </template>
       </div>
       <div class="mt-1 divider"></div>
       <div class="f d-col mt-1">
@@ -110,7 +112,12 @@ const handleCloseModal = (): void => {
 
 <style scoped>
 .close-button {
+  border-radius: var(--spacer-half);
   color: var(--text);
+  height: calc(var(--spacer) * 2 + var(--spacer-half));
+}
+.close-button:hover {
+  background-color: var(--accent-light);
 }
 .content {
   max-width: calc(var(--spacer) * 30);
@@ -122,8 +129,9 @@ const handleCloseModal = (): void => {
 }
 .divider {
   background-color: var(--text-inverted);
-  width: 100%;
   height: calc(var(--spacer-quarter) / 4);
+  opacity: .75;
+  width: 100%;
 }
 .modal {
   background-color: rgba(0, 0, 0, .7);
@@ -145,6 +153,14 @@ const handleCloseModal = (): void => {
 }
 .title-mobile {
   font-size: calc(var(--spacer) + var(--spacer-quarter));
+}
+.transparency-high {
+  opacity: .3;
+  transition: opacity var(--transition) ease-in;
+}
+.transparency-low {
+  opacity: 1;
+  transition: opacity var(--transition) ease-out;
 }
 input[type=range] {
   appearance: none;

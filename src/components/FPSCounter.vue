@@ -25,7 +25,7 @@ const props = defineProps<{ count: number }>();
   position: fixed;
   top: var(--spacer);
   transition: opacity var(--transition) ease-out;
-  width: calc(var(--spacer) * 6);
+  width: calc(var(--spacer) * 6 + var(--spacer-half));
   z-index: 10;
 }
 .counter:hover {
