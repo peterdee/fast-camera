@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vue-tsc && vite build",
+    "compile-wasm": "node ./fast-go/compile.js",
     "dev": "cross-env ENV=local vite --host",
     "preview": "vite preview"
   },
