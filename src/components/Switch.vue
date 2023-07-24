@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{
+  disabled: boolean;
   isChecked: boolean;
   label: string;
+  name: string;
 }>();
 </script>
 
@@ -9,15 +11,16 @@ const props = defineProps<{
   <div class="f ai-center j-space-between ns">
     <label
       class="switch-label"
-      for="switch"
+      :for="`switch-${name}`"
     >
       {{ props.label }}
     </label>
     <label class="switch">
       <input
-        id="switch"
         type="checkbox"
         :checked="props.isChecked"
+        :disabled="props.disabled"
+        :id="`switch-${name}`"
         @input="$emit('toggle-switch')"
       >
       <span class="slider round"></span>

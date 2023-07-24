@@ -9,6 +9,7 @@ const emit = defineEmits([
   'handle-threshold',
   'toggle-flip',
   'toggle-nms',
+  'toggle-wasm',
 ]);
 
 const props = defineProps<{
@@ -17,6 +18,8 @@ const props = defineProps<{
   nmsRadius: number;
   threshold: number;
   useNMS: boolean;
+  useWASM: boolean;
+  wasmLoaded: boolean;
 }>();
 
 const state = reactive<{ isClosing: boolean }>({
@@ -45,12 +48,29 @@ const handleCloseModal = (): void => {
       </div>
       <SwitchComponent
         label="Flip image"
+        name="flip"
+        :disabled="false"
         :is-checked="props.flipImage"
         @toggle-switch="emit('toggle-flip')"
       />
+      <div
+        :class="`mt-1 ${!props.wasmLoaded
+          ? 'transparency-high'
+          : 'transparency-low'}`"
+      >
+        <SwitchComponent
+          label="Use WASM instead of Javascript"
+          name="wasm"
+          :disabled="!props.wasmLoaded"
+          :is-checked="props.useWASM"
+          @toggle-switch="emit('toggle-wasm')"
+        />
+      </div>
       <div class="mv-1 divider"></div>
       <SwitchComponent
         label="Use NMS"
+        name="nms"
+        :disabled="false"
         :is-checked="props.useNMS"
         @toggle-switch="emit('toggle-nms')"
       />

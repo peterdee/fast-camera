@@ -17,6 +17,7 @@ interface StoredSettings {
   flipImage: boolean;
   nmsRadius: number;
   useNMS: boolean;
+  useWASM: boolean;
 }
 
 interface ComponentState extends StoredSettings {
@@ -40,6 +41,7 @@ const state = reactive<ComponentState>({
   showErrorModal: false,
   showSettingsModal: false,
   useNMS: false,
+  useWASM: false,
   wasmLoaded: false,
 });
 
@@ -142,6 +144,7 @@ const handleNMSRadius = (event: InputEvent): void => {
       flipImage: state.flipImage,
       nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
+      useWASM: state.useWASM,
     },
   );
 };
@@ -156,6 +159,7 @@ const handleThreshold = (event: InputEvent): void => {
       flipImage: state.flipImage,
       nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
+      useWASM: state.useWASM,
     },
   );
 };
@@ -169,6 +173,7 @@ const toggleNMS = (): void => {
       flipImage: state.flipImage,
       nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
+      useWASM: state.useWASM,
     },
   );
 };
@@ -182,6 +187,7 @@ const toggleFlipImage = (): void => {
       flipImage: state.flipImage,
       nmsRadius: state.nmsRadius,
       useNMS: state.useNMS,
+      useWASM: state.useWASM,
     },
   );
 };
@@ -190,7 +196,21 @@ const toggleSettingsModal = (): void => {
   state.showSettingsModal = !state.showSettingsModal;
 };
 
-onMounted((): void => {
+const toggleWASM = (): void => {
+  state.useWASM = !state.useWASM;
+  return setData<StoredSettings>(
+    'settings',
+    {
+      fastThreshold: state.fastThreshold,
+      flipImage: state.flipImage,
+      nmsRadius: state.nmsRadius,
+      useNMS: state.useNMS,
+      useWASM: state.useWASM,
+    },
+  );
+};
+
+onMounted(async (): Promise<void> => {
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     const faviconLink = document.querySelector<HTMLLinkElement>(`link[rel~='${'icon'}']`);
     if (faviconLink) {
@@ -198,11 +218,26 @@ onMounted((): void => {
     }
   }
 
+  const go = new (window as any).Go();
+  try {
+    const waInstance = await WebAssembly.instantiateStreaming(
+      fetch('bin.wasm'),
+      go.importObject,
+    );
+    go.run(waInstance.instance);
+    state.wasmLoaded = true;
+  } catch {
+    state.wasmLoaded = false;
+  }
+
   const existingSettings = getData<StoredSettings>('settings');
   if (existingSettings) {
     state.fastThreshold = existingSettings.fastThreshold;
     state.flipImage = existingSettings.flipImage;
     state.useNMS = existingSettings.useNMS;
+    if (state.wasmLoaded) {
+      state.useWASM = existingSettings.useWASM;
+    }
   }
 
   const isMobile = checkMobile();
@@ -217,6 +252,7 @@ onMounted((): void => {
         flipImage: true,
         nmsRadius: state.nmsRadius,
         useNMS: state.useNMS,
+        useWASM: state.useWASM,
       },
     );
   }
@@ -271,11 +307,14 @@ onMounted((): void => {
         :nms-radius="state.nmsRadius"
         :threshold="state.fastThreshold"
         :use-n-m-s="state.useNMS"
+        :use-w-a-s-m="state.useWASM"
+        :wasm-loaded="state.wasmLoaded"
         @close-modal="toggleSettingsModal"
         @handle-nms-radius="handleNMSRadius"
         @handle-threshold="handleThreshold"
         @toggle-flip="toggleFlipImage"
         @toggle-nms="toggleNMS"
+        @toggle-wasm="toggleWASM"
       />
     </template>
     <canvas
