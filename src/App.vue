@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue';
 
 import checkMobile from './utilities/is-mobile';
 import fast from './fast-canvas';
+import ErrorModalComponent from './components/ErrorModal.vue';
 import FooterComponent from './components/Footer.vue';
 import FPSCounterComponent from './components/FPSCounter.vue';
 import { getData, setData } from './utilities/data-service';
@@ -38,7 +39,7 @@ const state = reactive<ComponentState>({
   frameTime: [],
   isMobile: false,
   nmsRadius: DEFAULT_RADIUS,
-  showErrorModal: false,
+  showErrorModal: true,
   showSettingsModal: false,
   useNMS: false,
   useWASM: false,
@@ -95,18 +96,15 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
   return setTimeout(draw, 10, video);
 };
 
-// TODO: handle errors
-const handleError = (reason: unknown): void => {
+const handleError = (): void => {
   state.showErrorModal = true;
-  console.log(reason);
 };
 
-const handleSuccess = (stream: MediaStream): void => {
+const handleSuccess = (stream: MediaStream): null | void => {
   const [videoTrack = null] = stream.getVideoTracks();
   if (!videoTrack) {
-    // TODO: handle errors
     state.showErrorModal = true;
-    return console.log('video track is not available');
+    return null;
   }
 
   const windowHeight = window.innerHeight;
@@ -246,6 +244,7 @@ onMounted(async (): Promise<void> => {
   if (existingSettings) {
     state.fastThreshold = existingSettings.fastThreshold;
     state.flipImage = existingSettings.flipImage;
+    state.nmsRadius = existingSettings.nmsRadius;
     state.useNMS = existingSettings.useNMS;
     if (state.wasmLoaded) {
       state.useWASM = existingSettings.useWASM;
@@ -308,33 +307,38 @@ onMounted(async (): Promise<void> => {
   <div
     :class="`f ai-center j-center ${state.isMobile ? 'wrap-mobile' : 'wrap'}`"
   >
-    <template v-if="!state.showSettingsModal">
-      <FPSCounterComponent :count="state.fpsCount" />
-      <SettingsButtonComponent @handle-click="toggleSettingsModal" />
+    <template v-if="state.showErrorModal">
+      <ErrorModalComponent :is-mobile="state.isMobile" />
     </template>
-    <template v-if="state.showSettingsModal">
-      <SettingsModalComponent
-        :flip-image="state.flipImage"
-        :is-mobile="state.isMobile"
-        :nms-radius="state.nmsRadius"
-        :threshold="state.fastThreshold"
-        :use-n-m-s="state.useNMS"
-        :use-w-a-s-m="state.useWASM"
-        :wasm-loaded="state.wasmLoaded"
-        @close-modal="toggleSettingsModal"
-        @handle-nms-radius="handleNMSRadius"
-        @handle-threshold="handleThreshold"
-        @toggle-flip="toggleFlipImage"
-        @toggle-nms="toggleNMS"
-        @toggle-wasm="toggleWASM"
-      />
-    </template>
-    <canvas
-      :class="`${state.flipImage ? 'flip' : ''}`"
-      ref="canvasRef"
-    ></canvas>
-    <template v-if="!state.showSettingsModal">
-      <FooterComponent />
+    <template v-if="!state.showErrorModal">
+      <template v-if="!state.showSettingsModal">
+        <FPSCounterComponent :count="state.fpsCount" />
+          <SettingsButtonComponent @handle-click="toggleSettingsModal" />
+      </template>
+      <template v-if="state.showSettingsModal">
+        <SettingsModalComponent
+          :flip-image="state.flipImage"
+          :is-mobile="state.isMobile"
+          :nms-radius="state.nmsRadius"
+          :threshold="state.fastThreshold"
+          :use-n-m-s="state.useNMS"
+          :use-w-a-s-m="state.useWASM"
+          :wasm-loaded="state.wasmLoaded"
+          @close-modal="toggleSettingsModal"
+          @handle-nms-radius="handleNMSRadius"
+          @handle-threshold="handleThreshold"
+          @toggle-flip="toggleFlipImage"
+          @toggle-nms="toggleNMS"
+          @toggle-wasm="toggleWASM"
+        />
+      </template>
+      <canvas
+        :class="`${state.flipImage ? 'flip' : ''}`"
+        ref="canvasRef"
+      ></canvas>
+      <template v-if="!state.showSettingsModal">
+        <FooterComponent />
+      </template>
     </template>
   </div>
 </template>

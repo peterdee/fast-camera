@@ -139,27 +139,11 @@ const handleCloseModal = (): void => {
 .close-button:hover {
   background-color: var(--accent-light);
 }
-.content {
-  max-width: calc(var(--spacer) * 30);
-  min-width: calc(var(--spacer) * 20);
-  width: 30%;
-}
-.content-mobile {
-  width: 100%;
-}
 .divider {
   background-color: var(--text-inverted);
   height: calc(var(--spacer-quarter) / 4);
   opacity: .75;
   width: 100%;
-}
-.modal {
-  background-color: rgba(0, 0, 0, .7);
-  color: var(--text-inverted);
-  height: 100%;
-  position: fixed;
-  width: 100%;
-  z-index: 10;
 }
 .threshold {
   width: calc(var(--spacer) * 3);
