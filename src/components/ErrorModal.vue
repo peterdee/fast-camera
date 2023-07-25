@@ -11,9 +11,9 @@ const year = new Date().getFullYear();
     <div :class="`f d-col j-space-between mh-auto ${!isMobile ? 'wrap' : 'wrap-mobile'}`">
       <div class="empty"></div>
       <div
-        :class="`f d-col mh-auto ${props.isMobile
-          ? 'content-mobile p-2'
-          : 'content'}`"
+        :class="`f d-col ${props.isMobile
+          ? 'p-2 content-mobile'
+          : 'mh-2 content'}`"
       >
         <div class="t-center title">
           Could not access the camera!
@@ -22,7 +22,7 @@ const year = new Date().getFullYear();
           This application requires an access to your camera!
         </div>
         <div class="mt-1 t-center text">
-          Please refresh this page after connecting your camera.
+          Please connect your camera and refresh this page to use this application.
         </div>
       </div>
       <div class="f ai-center j-center footer">
@@ -74,6 +74,5 @@ const year = new Date().getFullYear();
 .wrap-mobile {
   height: fill-available;
   height: -webkit-fill-available;
-  top: 0;
 }
 </style>

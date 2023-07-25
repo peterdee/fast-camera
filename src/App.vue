@@ -2,8 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 
 import checkMobile from './utilities/is-mobile';
-import fast from './fast-canvas';
 import ErrorModalComponent from './components/ErrorModal.vue';
+import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
 import FPSCounterComponent from './components/FPSCounter.vue';
 import { getData, setData } from './utilities/data-service';
@@ -39,7 +39,7 @@ const state = reactive<ComponentState>({
   frameTime: [],
   isMobile: false,
   nmsRadius: DEFAULT_RADIUS,
-  showErrorModal: true,
+  showErrorModal: false,
   showSettingsModal: false,
   useNMS: false,
   useWASM: false,

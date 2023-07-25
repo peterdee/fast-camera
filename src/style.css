@@ -6,8 +6,6 @@
 .content {
   max-width: calc(var(--spacer) * 30);
   min-width: calc(var(--spacer) * 20);
-  width: 30%;
-  z-index: 15;
 }
 
 .content-mobile {
@@ -19,6 +17,7 @@
   color: var(--text-inverted);
   height: 100%;
   position: fixed;
+  top: 0;
   width: 100%;
   z-index: 10;
 }

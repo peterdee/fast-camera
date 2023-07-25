@@ -74,13 +74,11 @@ export default function fast({
   for (let i = 0; i < pixels.length; i += 4) {
     const { x, y } = getCoordinates(i / 4, width);
 
-    // TODO: handle border pixels, skip for now
     if (x < border || x > width - border
       || y < border || y > height - border) {
       continue;
     }
 
-    // high-speed test
     let brighterCount = 0;
     let darkerCount = 0;
     const grayPixel = gray[i];
