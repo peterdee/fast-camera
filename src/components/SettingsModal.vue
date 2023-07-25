@@ -59,7 +59,7 @@ const handleCloseModal = (): void => {
           : 'transparency-low'}`"
       >
         <SwitchComponent
-          label="Use WASM instead of Javascript"
+          label="Use WASM"
           name="wasm"
           :disabled="!props.wasmLoaded"
           :is-checked="props.useWASM"

@@ -1,0 +1,36 @@
+package main
+
+import "math"
+
+func clamp[T float64 | int | uint | uint8](value, min, max T) T {
+	if value > max {
+		return max
+	}
+	if value < min {
+		return min
+	}
+	return value
+}
+
+func drawSquare(pixels []uint8, x, y, width int) {
+	for i := -3; i <= 3; i += 1 {
+		px1 := getPixel(x+i, y-3, width)
+		px2 := getPixel(x+i, y+3, width)
+		pixels[px1], pixels[px1+1], pixels[px1+2] = 0, 255, 0
+		pixels[px2], pixels[px2+1], pixels[px2+2] = 0, 255, 0
+	}
+	for i := -2; i <= 2; i += 1 {
+		px1 := getPixel(x-3, y+i, width)
+		px2 := getPixel(x+3, y+i, width)
+		pixels[px1], pixels[px1+1], pixels[px1+2] = 0, 255, 0
+		pixels[px2], pixels[px2+1], pixels[px2+2] = 0, 255, 0
+	}
+}
+
+func getCoordinates(pixel, width int) (int, int) {
+	return pixel % width, int(math.Floor(float64(pixel) / float64(width)))
+}
+
+func getPixel(x, y, width int) int {
+	return ((y * width) + x) * 4
+}

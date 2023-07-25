@@ -41,6 +41,20 @@ npm run dev
 
 Development server will be available at https://localhost:3000
 
+### WASM
+
+WASM binary is compiled from Golang source (Golang **v1.20** is required)
+
+Golang FAST implementation is based on https://github.com/peterdee/go-fast
+
+WASM binary is already included in the project, it can be recompiled with the following command
+
+```shell script
+npm run compile
+```
+
+WASM binary can be compiled with [TinyGO](https://tinygo.org), in that case the [public/wasm_exec.js](./public/wasm_exec.js) file should be replaced
+
 ### Vercel
 
 `release` branch of this repository is automatically deployed to [Vercel](https://vercel.com)

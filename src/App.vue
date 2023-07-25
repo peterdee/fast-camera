@@ -70,6 +70,18 @@ const draw = (video: HTMLVideoElement): null | NodeJS.Timeout | void => {
 
   const imageData = ((): ImageData => {
     const frame = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    if (state.useWASM) {
+      const { data, height, width } = frame;
+      (window as any).fastWASM(
+        data,
+        height,
+        width,
+        state.fastThreshold,
+        state.useNMS,
+        state.nmsRadius,
+      );
+      return frame;
+    }
     return fast({
       imageData: frame,
       radius: state.nmsRadius,
