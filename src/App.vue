@@ -7,6 +7,7 @@ import fast from './fast-canvas';
 import FooterComponent from './components/Footer.vue';
 import FPSCounterComponent from './components/FPSCounter.vue';
 import { getData, setData } from './utilities/data-service';
+import requestWakeLock from './utilities/wakelock';
 import SettingsButtonComponent from './components/SettingsButton.vue';
 import SettingsModalComponent from './components/SettingsModal.vue';
 
@@ -227,6 +228,12 @@ onMounted(async (): Promise<void> => {
       faviconLink.href = 'favicon-light.svg';
     }
   }
+
+  const wakeLock = () => {
+    requestWakeLock();
+    document.removeEventListener('click', wakeLock);
+  };
+  document.addEventListener('click', wakeLock, { once: true });
 
   const go = new (window as any).Go();
   try {
