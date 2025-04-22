@@ -4,18 +4,19 @@ Real-time [FAST corner detector](https://docs.opencv.org/5.x/df/d0c/tutorial_py_
 
 Demo is available online: https://fast.dyum.in / https://fast-camera.vercel.app
 
+Engines: Node **v22** & Golang **v1.24**
+
 ### Deploy
 
+Clone the repository and install dependencies
+
 ```shell script
-git clone https://github.com/peterdee/fast-camera
 cd ./fast-camera
-nvm use 18
+nvm use 22
 npm ci
 ```
 
-### Launch
-
-#### Development
+HTTPS is required in order to use camera (even for local development)
 
 Create a directory for certificates
 
@@ -23,7 +24,7 @@ Create a directory for certificates
 mkdir certificates && cd ./certificates
 ```
 
-Generate `key.pem` and `cert.pem` files in the `certificates` directory
+Generate `key.pem` and `cert.pem` files in the `certificates` directory using OpenSSL
 
 ```shell script
 openssl genrsa -out key.pem 2048
@@ -33,29 +34,35 @@ openssl req -x509 -sha256 -days 365 -key key.pem -in csr.csr -out cert.pem
 
 More details regarding certificates can be found [here](https://msol.io/blog/tech/create-a-self-signed-ssl-certificate-with-openssl/)
 
-Run the server
+### Launch
+
+- Run local development server
 
 ```shell script
 npm run dev
 ```
 
-Development server will be available at https://localhost:3000
+Application will be available at https://localhost:3000
 
-### WASM
+- Build static files for production
 
-WASM binary is compiled from Golang source (Golang **v1.20** is required)
+```shell script
+npm run build
+```
+
+### Compile WASM binary
+
+WASM binary is compiled from Golang source (Golang **v1.24** is required)
 
 Golang FAST implementation is based on https://github.com/peterdee/go-fast
 
 WASM binary is already included in the project, it can be recompiled with the following command
 
 ```shell script
-npm run compile
+npm run compile-wasm
 ```
 
-WASM binary can be compiled with [TinyGO](https://tinygo.org), in that case the [public/wasm_exec.js](./public/wasm_exec.js) file should be replaced
-
-### Vercel
+### Cloud deployment
 
 `release` branch of this repository is automatically deployed to [Vercel](https://vercel.com)
 

@@ -2,11 +2,11 @@
   "name": "fast-camera",
   "description": "Real-time FAST corner detector demo",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "build": "vue-tsc && vite build",
-    "compile": "node ./fast-go/compile.js",
+    "compile-wasm": "node ./fast-go/compile.js",
     "dev": "cross-env ENV=local vite --host",
     "preview": "vite preview"
   },
@@ -15,8 +15,8 @@
     "url": "https://github.com/peterdee"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "repository": {
     "type": "git",
